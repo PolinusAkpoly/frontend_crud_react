@@ -14,6 +14,11 @@ export const getDatas = async (entityName: string) => {
     const datas = await get(url)
     return datas
   }
+  export const getDatasPerPage = async (entityName: string, page: number = 1, limit: number = 5) =>{
+    const url = webApiUrL + entityName+"/by/page?pageNumber="+page+"&pageLimit="+limit
+    const datas = await get(url)
+    return datas
+  }
 
   export const updateData = async (entityName: string, id: string, data: any) =>{
     entityName = entityName.toLowerCase()

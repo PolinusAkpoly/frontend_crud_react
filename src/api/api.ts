@@ -19,6 +19,7 @@ export const get = async (url: string, options: any = {}) => {
 
 }
 
+
 export const post = async (url: string, data: any, options: any = {}) => {
     try {
         options.method = "POST"
