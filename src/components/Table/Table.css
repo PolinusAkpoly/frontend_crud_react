@@ -5,4 +5,10 @@
   Created At : 11/01/2024 14:09:42
 */
 
-.Table {}
+#dataPerPage {
+  width: 100px;
+  height: 42px;
+  color: white;
+ background-color: #0d6efd;
+ 
+}

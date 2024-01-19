@@ -42,19 +42,22 @@ const Table: FC<TableProps> = ({ entityName, currentPage }) => {
 
   const [columns, setColumns] = useState<IColumn[]>(storedPosts);
  
-  console.log(columns);
+  // console.log(columns);
 
   useEffect(() => {
 
     const runLocalData = async () => {
       window.scrollTo(0, 0)
       if (entityName) {
+        storedPosts = getItem(entityName);
+    
+        
         let newDatas = await getDatasPerPage(entityName, currentPage, datasPerPage)
         setDatas(newDatas)
         if (newDatas?.results?.length) {
 
-          if (columns && columns.length) {
-            setColumns(columns)
+          if (storedPosts) {
+            setColumns(storedPosts)
           } else {
             const first = newDatas.results[0]
             delete first?._id
@@ -70,7 +73,7 @@ const Table: FC<TableProps> = ({ entityName, currentPage }) => {
 
     }
     runLocalData()
-  }, [currentPage,entityName, datasPerPage, datas?.results?.length])
+  }, [entityName, currentPage,  datasPerPage, datas?.results?.length])
 
   const handleSelect = (event: any, column: string) => {
     const { checked } = event.target
@@ -94,8 +97,8 @@ const Table: FC<TableProps> = ({ entityName, currentPage }) => {
     pageNumbers.push(i);
   }
 
-  console.log({ datas });
-  console.log({ pageNumbers });
+  // console.log({ datas });
+  // console.log({ pageNumbers });
 
   const setCurrentPage = (newPage: number) => {
     console.log({ newPage });
@@ -120,11 +123,13 @@ const Table: FC<TableProps> = ({ entityName, currentPage }) => {
           isCreateData ?
           <FormModal 
           handleClose={()=>setIsCreateData(false)} 
-          columns={columns} />
+          columns={columns} 
+          entityName={entityName} 
+          />
           :
           null
         }
-        <div className='d-flex gap-1'>
+        <div className='d-flex gap-1 '>
           <select name="dataPerPage" onChange={(e)=>setDatasPerPage(e.target.value)} className='form-control' id="dataPerPage">
             <option value="5">5</option>
             <option value="10">10</option>
@@ -145,7 +150,7 @@ const Table: FC<TableProps> = ({ entityName, currentPage }) => {
                         onClick={(event) => handleSelect(event, column.name)}
                         checked={column.checked}
                       />
-                      <label className="form-check-label" htmlFor="flexSwitchCheckChecked">{column.name}</label>
+                      <label className="form-check-label" htmlFor="flexSwitchCheckChecked">{capitalizeFirstLetter(column.name)}</label>
                     </div>
                   })
                   :
@@ -223,95 +228,7 @@ const Table: FC<TableProps> = ({ entityName, currentPage }) => {
               :
               null
           }
-          {/* /dashboard/:entityName/:_id" */}
-
-
-          {/*           
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>
-              <div className="d-flex gap-1">
-                <a href="" className="btn btn-success">View</a>
-                <a href="" className="btn btn-primary">Edit</a>
-                <a href="" className="btn btn-danger">Delet</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>
-              <div className="d-flex gap-1">
-                <a href="" className="btn btn-success">View</a>
-                <a href="" className="btn btn-primary">Edit</a>
-                <a href="" className="btn btn-danger">Delet</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>
-              <div className="d-flex gap-1">
-                <a href="" className="btn btn-success">View</a>
-                <a href="" className="btn btn-primary">Edit</a>
-                <a href="" className="btn btn-danger">Delet</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>
-              <div className="d-flex gap-1">
-                <a href="" className="btn btn-success">View</a>
-                <a href="" className="btn btn-primary">Edit</a>
-                <a href="" className="btn btn-danger">Delet</a>
-              </div>
-            </td>
-          </tr>
-       
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>
-              <div className="d-flex gap-1">
-                <a href="" className="btn btn-success">View</a>
-                <a href="" className="btn btn-primary">Edit</a>
-                <a href="" className="btn btn-danger">Delet</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>
-              <div className="d-flex gap-1">
-                <a href="" className="btn btn-success">View</a>
-                <a href="" className="btn btn-primary">Edit</a>
-                <a href="" className="btn btn-danger">Delet</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>
-              <div className="d-flex gap-1">
-                <a href="" className="btn btn-success">View</a>
-                <a href="" className="btn btn-primary">Edit</a>
-                <a href="" className="btn btn-danger">Delet</a>
-              </div>
-            </td>
-          </tr> */}
+          
 
         </tbody>
       </table>

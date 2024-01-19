@@ -1,5 +1,6 @@
 import { webApiUrL } from "../enviromments/enviromment"
-import { get, put } from "./api"
+import { User } from "../models/User"
+import { get, post, postWithFile, put } from "./api"
 
 
 
@@ -20,13 +21,32 @@ export const getDatas = async (entityName: string) => {
     return datas
   }
 
+  export const createData = async (entityName: string,  data: any) =>{
+    entityName = entityName.toLowerCase()
+    const url = webApiUrL + entityName
+    const datas = await post(url,data)
+    return datas
+  }
+  export const addDataWithFile = async (entityName: string, data: any, setProgress: any = null) =>{
+    entityName = entityName.toLowerCase()
+    const url = webApiUrL + entityName
+    const datas = await postWithFile(url,data,{}, setProgress)
+    return datas
+  }
+  
   export const updateData = async (entityName: string, id: string, data: any) =>{
     entityName = entityName.toLowerCase()
     const url = webApiUrL + entityName+"/"+id
     const datas = await put(url,data)
     return datas
   }
-
+  export const createUser = async (user: User) => {
+    const url = webApiUrL + "user/signup"
+    const data = await post(url, user)
+  
+    return data
+  
+  }
 
 
 

@@ -51,6 +51,38 @@ export const post = async (url: string, data: any, options: any = {}) => {
 
 }
 
+export const postWithFile = async (url: string, formData: FormData, options: any = {}, setProgress: any = {}) => {
+    try {
+        options.method = "POST"
+        options.body = formData
+        console.log(setProgress);
+        
+       
+        options.headers = {
+            ...options.headers,
+        }
+        
+        const response = await fetch(url, options)
+
+        if (!response.ok) {
+            const error = await response.json()
+            return {
+                ...error,
+                isSuccess: false
+            }
+        }
+
+        return await response.json()
+
+    } catch (error) {
+        return {
+            isSuccess: false,
+            error
+        }
+    }
+
+}
+
 export const put = async (url: string, data: any, options: any = {}) => {
     try {
         options.method = "PUT"
