@@ -1,25 +1,25 @@
 import React  from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 
 import '/node_modules/bootstrap/dist/css/bootstrap.min.css';
 
-import { Dashboard } from './pages/Dashboard/Dashboard';
-import { Home } from './pages/Home';
+// import { Dashboard } from './pages/Dashboard/Dashboard';
+import AdminDashboard from './components/AdminDashboard/AdminDashboard';
+import DataModel from './components/DataModel/DataModel';
+
+
 
 
 
 const App: React.FC = () => {
 
-
-
-
   return (
     <BrowserRouter>
-
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard/:entityName" element={<Dashboard />} />
+        <Route path="/dashboard" element={<AdminDashboard />} />
+        <Route path="/dashboard/:entityName" element={<DataModel />} />
+        {/* <Route path="/dashboard/:entityName" element={<Dashboard />} /> */}
       </Routes>
 
     </BrowserRouter>

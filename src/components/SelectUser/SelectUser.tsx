@@ -4,9 +4,10 @@
   App Name : E-commerce with React.Js
   Created At : 16/01/2024 15:20:28
 */
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect} from 'react';
 import './SelectUser.css';
 import { capitalizeFirstLetter } from '../../helpers/utils';
+
 
 
 interface SelectUserProps {
@@ -16,27 +17,40 @@ interface SelectUserProps {
   defaultValue?: string
   className?: string
   onChange: (e: any) => void
-  
+  multiple?: string
 }
 
 
-const SelectUser: FC<SelectUserProps> = ({ name, value, options, defaultValue, className, onChange }) => {
+const SelectUser: FC<SelectUserProps> = ({ name, value, options, defaultValue, className, onChange, multiple }) => {
+console.log(name);
 
-console.log(options);
+
+
+// const deleteLastLetter = (str: string) => {
+//   return str.slice(0, str.length);
+// }
+
 
 
   useEffect(() => {
     window.scrollTo(0, 0)
     const runLocalData = async () => {
-
+      // setNames(name)
     }
     runLocalData()
   })
 
   return (
     <div className="form-group m-1">
-       <label htmlFor={name}> {capitalizeFirstLetter(name)} :</label>
-      <select name={name} value={value} onChange={onChange} defaultValue={defaultValue} className={className}>
+      <label htmlFor={name}> {capitalizeFirstLetter(name)} :</label>
+     {
+      multiple? 
+      <select name={name} value={value} onChange={onChange} defaultValue={defaultValue} className={className} multiple></select>
+      :
+      null
+    }
+      <select name={name} value={value} onChange={onChange} defaultValue={defaultValue} className={className} >
+
         {
         options ?
         options.map((option) => {
@@ -52,4 +66,5 @@ console.log(options);
   );
 }
 
+        
 export default SelectUser;

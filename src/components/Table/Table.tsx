@@ -12,6 +12,7 @@ import { getItem, setItem } from '../../services/localstorage.service';
 import Pagination from '../Pagination/Pagination';
 import { getDatasPerPage } from '../../api/entity';
 import FormModal from '../FormModal/FormModal';
+import { IColumn } from '../../models/IColumn';
 
 
 
@@ -20,10 +21,7 @@ interface TableProps {
   entityName?: string
   currentPage: number
 }
-interface IColumn {
-  name: string,
-  checked: boolean,
-}
+
 
 
 const Table: FC<TableProps> = ({ entityName, currentPage }) => {

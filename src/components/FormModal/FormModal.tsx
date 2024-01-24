@@ -12,8 +12,8 @@ import { useFormik } from 'formik';
 import InputField from '../InputField/InputField';
 import TextareaField from '../TextareaField/TextareaField';
 import SelectField from '../SelectField/SelectField';
-import { addDataWithFile, createData, getDatas } from '../../api/entity';
-import SelectUser from '../SelectUser/SelectUser';
+import { addDataWithFile, createData } from '../../api/entity';
+// import SelectUser from '../SelectUser/SelectUser';
 
 
 
@@ -27,26 +27,20 @@ interface FormModalProps {
 
 const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => {
 
+
   const validate = (values: any) => validateForm(values, columns)
   // const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [fileSource, setFileSource] = useState<File | null>(null)
-  const [entityNameDatas, setEntityNameDatas] = useState<any[]>([])
+  const [columnData, setColumnData] = useState<any>(null)
+  // const [entityNameDatas, setEntityNameDatas] = useState<any[]>([])
   // console.log(entityNameDatas);
 
   useEffect(() => {
     window.scrollTo(0, 0)
     const runLocalData = async () => {
-      if (entityName) {
-        // let entityDatas = await getDatas(entityName)
-        let entityDatas = await getDatas('users')
-        if (entityDatas.isSuccess) {
-          setEntityNameDatas(entityDatas.results)
-        }
-        // console.log(entityDatas);
-
-      }
-
-
+      let datas = await Promise.all(columns.map( (column)=>  filterInput(column)))
+      setColumnData(datas);
+      
     }
     runLocalData()
   },[])
@@ -71,22 +65,7 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
     return capitalizeFirstLetter(value)
   }
 
-  const getNameUsers = (datas: any[]) => {
-    let result: any[] = []
-    if (datas.length) {
-      datas.forEach((data: any) => {
-        let names = {
-          value: data._id,
-          name: data.first_name + " " + data.last_name
-
-        }
-
-        result.push(names)
-      })
-    }
-    return result
-
-  }
+  
 
   // console.log(getNameUsers(entityNameDatas));
 
@@ -152,11 +131,7 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
           <Modal.Body>
             <form onSubmit={formik.handleSubmit}>
               {
-                columns?.map((column, index) => {
-                  let getNameUser = getNameUsers(entityNameDatas)
-                  let result: any = filterInput(column, getNameUser)
-
-
+                columnData?.map((result: any, index: number) => {                  
 
                   if (result.input == 'input' && result.type != 'file') {
                     return (<div>
@@ -207,18 +182,7 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
                       }
                     </div>)
                   }
-                  else if (result.input == 'select' && result.name == 'author') {
-                    return (<div>
-                      <SelectUser key={index} value={formik.values[result.name]} options={result.options} onChange={formik.handleChange} name={result.name} className={result.className} />
-                      {
-                        formik.touched[result.name] && formik.errors[result.name] ?
-                          (
-                            <div>{formik.errors[result.name] as any}</div>
-                          )
-                          : null
-                      }
-                    </div>)
-                  }
+                 
 
                 })}
 

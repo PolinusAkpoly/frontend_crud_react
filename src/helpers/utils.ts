@@ -1,3 +1,5 @@
+import { getDatas } from "../api/entity";
+
 export const convertImageToDataURL = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -23,7 +25,35 @@ export const convertImageToDataURL = (file: File): Promise<string> => {
 export const capitalizeFirstLetter = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+// const getNameUsers = (datas: any[]) => {
 
+//     let result: any[] = []
+//     if (datas.length) {
+//       datas.forEach((data: any) => {
+//         let names = {
+//           value: data._id,
+//           name: data.first_name + " " + data.last_name
+
+//         }
+
+//         result.push(names)
+//       })
+//     }
+//     return result
+
+//   }
+
+const getUserData = async () => {
+    let users = [];
+    let userDatas = await getDatas('users')
+    if (userDatas.isSuccess) {
+        console.log(userDatas.results);
+        users = userDatas.results
+
+    }
+
+    return users
+}
 
 export const filterTableData = (name: string, value: string) => {
     if (name.toLocaleLowerCase().includes('image')) {
@@ -38,7 +68,9 @@ export const filterTableData = (name: string, value: string) => {
     return value;
 }
 
-export const filterInput = (column: any, getNameUser: any) => {
+export const filterInput = async (column: any) => {
+
+
     let result: any = {}
     let excludeInput = ['created_at', 'updated_at', 'position', 'roles']
 
@@ -79,16 +111,27 @@ export const filterInput = (column: any, getNameUser: any) => {
             options: [{ name: 'Yes', value: true }, { name: 'No', value: false }],
             className: 'form-control'
         }
-    } 
+    }
     else if (column.name.toLocaleLowerCase().startsWith('author')) {
+        let users: any = await getUserData();
         result = {
             input: 'select',
             type: 'select',
             name: `${column.name}`,
-            options: getNameUser,
+            options: users.map((user: any) => { return { value: user._id, name: user.first_name + " " + user.last_name } }),
             className: 'form-control'
         }
-        
+
+    } else if (column.name.toLocaleLowerCase().startsWith('authors')) {
+        let users: any = await getUserData();
+        result = {
+            input: 'select',
+            type: 'select',
+            name: `${column.name}`,
+            options: users.map((user: any) => { return { value: user._id, name: user.full_name + " " + user.last_name } }),
+            className: 'form-control'
+        }
+
     } else if (column.name.toLocaleLowerCase().startsWith('email')) {
         result = {
             input: 'input',
@@ -98,7 +141,7 @@ export const filterInput = (column: any, getNameUser: any) => {
             className: 'form-control'
         }
 
-    } else if (column.name.toLocaleLowerCase().startsWith('pass')) {
+    } else if (column.name.toLocaleLowerCase().startsWith('password')) {
         result = {
             input: 'input',
             type: 'password',
@@ -107,7 +150,7 @@ export const filterInput = (column: any, getNameUser: any) => {
             className: 'form-control'
         }
 
-     } else {
+    } else {
         result = {
             input: 'input',
             type: 'text',
@@ -127,19 +170,19 @@ export const validateForm = (values: any, columns: any[]) => {
     let excludeInput = ['created_at', 'updated_at', 'position', 'roles', 'imageurl']
 
     columns.forEach(column => {
-        
-        if (excludeInput.includes(column.name.toLowerCase()) || column.name.toLowerCase().startsWith('created') ) {
+
+        if (excludeInput.includes(column.name.toLowerCase()) || column.name.toLowerCase().startsWith('created')) {
             // Omitir la iteración si se cumple alguna de las condiciones
             return;
         }
         if (!values[column.name]) {
-            errors = {...errors, [column.name]: 'Required'};  
+            errors = { ...errors, [column.name]: 'Required' };
         }
-        
+
     });
-    
-    console.log({errors});
-    
+
+    console.log({ errors });
+
     return errors;
 }
 export const validateCreactUsersForm = (values: any) => {
@@ -178,18 +221,18 @@ export const validateCreactUsersForm = (values: any) => {
 
 export const generateFileUrl = (file: any) => {
     if (!file) {
-      console.error("Le fichier est manquant.");
-      return null;
+        console.error("Le fichier est manquant.");
+        return null;
     }
-  
+
     try {
-      const fileUrl = URL.createObjectURL(file);
-      return fileUrl;
+        const fileUrl = URL.createObjectURL(file);
+        return fileUrl;
     } catch (error) {
-      console.error("Erreur lors de la création de l'URL du fichier :", error);
-      return null;
+        console.error("Erreur lors de la création de l'URL du fichier :", error);
+        return null;
     }
-  }
-  
+}
+
 
 

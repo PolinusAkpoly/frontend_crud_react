@@ -34,6 +34,12 @@ export const getDatas = async (entityName: string) => {
     return datas
   }
   
+  export const searchData = async (entityName: string, params: string, page: number = 1, limit: number = 5) =>{
+    entityName = entityName.toLowerCase()
+    const url = webApiUrL + entityName+"/search?"+ params+"&pageNumber="+page+"&pageLimit="+limit
+    const datas = await get(url)
+    return datas
+  }
   export const updateData = async (entityName: string, id: string, data: any) =>{
     entityName = entityName.toLowerCase()
     const url = webApiUrL + entityName+"/"+id

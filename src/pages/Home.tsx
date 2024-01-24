@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from 'react'
-import Aside from '../components/Aside/Aside'
-import DashboardComponent from '../components/DashboardComponent/DashboardComponent'
+
+import DashboardComponent from '../components/DataModel/DataModel'
 
 
 
@@ -22,18 +22,7 @@ export const Home: React.FC = () => {
 
   return (
     <Fragment>
-      
-      
-      <div className="row">
-        <div className="col-md">
-          <Aside />
-        </div>
-        <div className="col-md-12">
           <DashboardComponent />
-        
-        </div>
-      </div>
-
     </Fragment>
   )
 }
