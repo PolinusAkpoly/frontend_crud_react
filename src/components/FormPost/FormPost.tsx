@@ -75,11 +75,8 @@ const handleSubmit = async (event: any) =>{
 
       if (data.isSuccess) {
         console.log('donnees modifiees avec succes');
-        
-        
       }
   
-
  }
     
 

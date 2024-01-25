@@ -47,13 +47,15 @@ const getUserData = async () => {
     let users = [];
     let userDatas = await getDatas('users')
     if (userDatas.isSuccess) {
-        console.log(userDatas.results);
+        // console.log(userDatas.results);
         users = userDatas.results
 
     }
 
     return users
 }
+
+
 
 export const filterTableData = (name: string, value: string) => {
     if (name.toLocaleLowerCase().includes('image')) {
@@ -86,7 +88,8 @@ export const filterInput = async (column: any) => {
             type: 'file',
             name: `${column.name.toLocaleLowerCase()}`,
             placeholder: `${capitalizeFirstLetter(column.name)} ...`,
-            className: 'form-control'
+            className: 'form-control',
+            value: `${column.value}`
         };
 
 
@@ -97,7 +100,9 @@ export const filterInput = async (column: any) => {
             type: 'textarea',
             name: `${column.name.toLocaleLowerCase()}`,
             placeholder: `${capitalizeFirstLetter(column.name)} ...`,
-            className: 'form-control'
+            className: 'form-control',
+            value: `${column.value}`
+
         };
 
         //  `<textarea onChange={formik.handleChange} class='form-control' name='${column.name}' placeholder='${capitalizeFirstLetter(column.name)}' ...'} >
@@ -109,7 +114,8 @@ export const filterInput = async (column: any) => {
             type: 'select',
             name: `${column.name}`,
             options: [{ name: 'Yes', value: true }, { name: 'No', value: false }],
-            className: 'form-control'
+            className: 'form-control',
+            value: `${column.value}`
         }
     }
     else if (column.name.toLocaleLowerCase().startsWith('author')) {
@@ -119,7 +125,8 @@ export const filterInput = async (column: any) => {
             type: 'select',
             name: `${column.name}`,
             options: users.map((user: any) => { return { value: user._id, name: user.first_name + " " + user.last_name } }),
-            className: 'form-control'
+            className: 'form-control',
+            value: `${column.value}`
         }
 
     } else if (column.name.toLocaleLowerCase().startsWith('authors')) {
@@ -129,7 +136,8 @@ export const filterInput = async (column: any) => {
             type: 'select',
             name: `${column.name}`,
             options: users.map((user: any) => { return { value: user._id, name: user.full_name + " " + user.last_name } }),
-            className: 'form-control'
+            className: 'form-control',
+            value: `${column.value}`
         }
 
     } else if (column.name.toLocaleLowerCase().startsWith('email')) {
@@ -138,7 +146,8 @@ export const filterInput = async (column: any) => {
             type: 'email',
             name: `${column.name.toLocaleLowerCase()}`,
             placeholder: `${capitalizeFirstLetter(column.name)}  ...`,
-            className: 'form-control'
+            className: 'form-control',
+            value: `${column.value}`
         }
 
     } else if (column.name.toLocaleLowerCase().startsWith('password')) {
@@ -147,7 +156,8 @@ export const filterInput = async (column: any) => {
             type: 'password',
             name: `${column.name.toLocaleLowerCase()}`,
             placeholder: `${capitalizeFirstLetter(column.name)}`,
-            className: 'form-control'
+            className: 'form-control',
+            value: `${column.value}`
         }
 
     } else {
@@ -156,7 +166,8 @@ export const filterInput = async (column: any) => {
             type: 'text',
             name: `${column.name.toLocaleLowerCase()}`,
             placeholder: `${capitalizeFirstLetter(column.name)}`,
-            className: 'form-control'
+            className: 'form-control',
+            value: `${column.value}`
         }
 
         // `<input onChange={formik.handleChange} class='form-control' type='text' name='${column.name}' placeholder='${capitalizeFirstLetter(column.name)}' ...'} />`

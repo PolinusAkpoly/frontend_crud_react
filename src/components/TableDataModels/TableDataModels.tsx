@@ -6,7 +6,7 @@
 */
 import React, { FC, useEffect, useState } from 'react';
 import './TableDataModels.css';
-import { useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { capitalizeFirstLetter, filterTableData } from '../../helpers/utils';
 import { getItem, setItem } from '../../services/localstorage.service';
 import Pagination from '../Pagination/Pagination';
@@ -14,6 +14,7 @@ import { getDatasPerPage, searchData } from '../../api/entity';
 import FormModal from '../FormModal/FormModal';
 import { Link } from 'react-router-dom';
 import SearchBar from '../SearchBar/SearchBar';
+import ComfirmDeleteModal from '../ComfirmDeleteModal/ComfirmDeleteModal';
 
 
 interface TableDataModelsProps {
@@ -33,6 +34,9 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
   const [datas, setDatas] = useState<any>(null);
   const [datasList, setDatasList] = useState<any>(null);
   const [isCreateData, setIsCreateData] = useState<boolean>(false);
+  const [isUpdateData, setIsUpdateData] = useState<boolean>(false);
+  const [isConfirmDeleteData, setIsConfirmDeleteData] = useState<boolean>(false);
+  const [modelId, setModelId] = useState<string>("");
   const [datasPerPage, setDatasPerPage] = useState((window as any).localStorage.getItem('perPage') || 5);
   // const [searchUri, setSearchUri] = useState<string>("");
 
@@ -119,10 +123,6 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
   };
 
 
-
-
-
-
   const handleSearch = (columnSelected: any, tag: any) => {
 
     let result = "?search="
@@ -135,9 +135,15 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
 
   };
 
+  const openEditModel = (id: any) =>{
+  setIsUpdateData(!isUpdateData)
+  setModelId(id)
+ }
 
-
-  
+  const handleClose = ()=>{
+    setIsCreateData(false)
+    setIsUpdateData(false)
+  }
 
   return (
     <div className="content-wrapper">
@@ -184,15 +190,27 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
                     <button onClick={() => setIsCreateData(!isCreateData)} className="btn btn-success mb-2">Create</button>
 
                     {
-                      isCreateData ?
+                      isCreateData || isUpdateData?
                         <FormModal
-                          handleClose={() => setIsCreateData(false)}
+                          handleClose={handleClose} 
                           columns={columns}
                           entityName={entityName}
+                          modelId={modelId}
                         />
                         :
                         null
                     }
+
+                   {
+                      isConfirmDeleteData ?
+                        <ComfirmDeleteModal modelId={modelId} entityName={entityName}/>
+                                           
+                        :
+                        null
+                    }
+
+
+
                     <div className='d-flex gap-1 '>
                       <select name="dataPerPage" onChange={(e) => setDatasPerPage(e.target.value)} className='form-control' id="dataPerPage">
                         <option value="5">5</option>
@@ -266,9 +284,11 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
                               }
                               <td>
                                 <div className="d-flex gap-1">
-                                  <Link to={"/dashboard/" + entityName + "/" + data._id} className="btn btn-success">View</Link>
-                                  <Link to={"/dashboard/" + entityName + "/" + data._id} className="btn btn-primary">Edit</Link>
-                                  <a href="" className="btn btn-danger">Delet</a>
+                                  <Link to={"/dashboard/view/" + entityName + "/" + data._id} className="btn btn-success">View</Link>
+                                  <Link onClick={() => openEditModel(data._id)} to={'#'} className="btn btn-primary">Edit</Link>                
+                                  <Link to={'#'} onClick={()=>setIsConfirmDeleteData(true)} className="btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">Delete</Link>
+                                  
+
                                 </div>
                               </td>
                             </tr>

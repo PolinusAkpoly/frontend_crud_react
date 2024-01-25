@@ -16,10 +16,11 @@ interface InputFieldProps {
   placeholder?: string
   className?: string
   onChange: (e: any) => void
+  value?:string
 }
 
 
-const InputField: FC<InputFieldProps> = ({ type, name, onChange, placeholder, defaultValue, className }) => {
+const InputField: FC<InputFieldProps> = ({ type, name, onChange, placeholder, defaultValue, className, value }) => {
 
 
 
@@ -29,7 +30,7 @@ const InputField: FC<InputFieldProps> = ({ type, name, onChange, placeholder, de
 
     }
     runLocalData()
-  })
+  },[])
 
   
   return (
@@ -40,7 +41,10 @@ const InputField: FC<InputFieldProps> = ({ type, name, onChange, placeholder, de
       className={className || ''} type={type || 'text'} 
       defaultValue={defaultValue} 
       name={name} 
-      placeholder={placeholder || ''} />
+      placeholder={placeholder || ''}
+      value={value}
+      />
+      
     </div>
 
   );

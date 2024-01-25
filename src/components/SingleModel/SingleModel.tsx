@@ -4,20 +4,21 @@
   App Name : E-commerce with React.Js
   Created At : 11/01/2024 15:10:20
 */
-import React, { FC, useEffect, useState } from 'react';
-import './SinglePost.css';
+import React, { FC, Fragment, useEffect, useState } from 'react';
+import './SingleModel.css';
 import { useParams } from 'react-router-dom';
 import { Post } from '../../models/Post';
 import { getDatasById } from '../../api/entity';
 import { Link } from 'react-router-dom';
+import Aside from '../Aside/Aside';
 
 
-interface SinglePostProps {
+interface SingleModelProps {
 
 }
 
 
-const SinglePost: FC<SinglePostProps> = () => {
+const SingleModel: FC<SingleModelProps> = () => {
 
   // const id = useParams()._id
 // console.log(id);
@@ -42,11 +43,16 @@ const { entityName, id } = useParams()
 
     }
     runLocalData()
-  })
+  },[])
 
   return (
-    <div className="SinglePost">
-      <div className="container mt-4">
+    <Fragment>
+      <div className="row">
+      <div className="col-2">
+      <Aside/>
+      </div>
+      <div className="SinglePost col-10">
+      <div className="container mt-5">
         <div className="row">
           <div className="col-lg-8">
             <h1>{post?.title}</h1>
@@ -56,13 +62,15 @@ const { entityName, id } = useParams()
           </div>
           <div className="col-lg-4">
 
-            <h2></h2>
             <p><Link to={"/dashboard/" + entityName} className="btn btn-success btnPost">Return to Posts</Link></p>
           </div>
-        </div>
+        </div> 
       </div>
+     </div>
     </div>
+   
+    </Fragment>
   );
 }
 
-export default SinglePost;
+export default SingleModel;

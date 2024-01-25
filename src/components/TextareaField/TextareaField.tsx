@@ -15,10 +15,11 @@ interface TextareaFieldProps {
   className?: string
   value?: string
   onChange: (e: any) => void
+  defaultValue: string
 }
 
 
-const TextareaField: FC<TextareaFieldProps> = ({ name, value, placeholder, className, onChange }) => {
+const TextareaField: FC<TextareaFieldProps> = ({ name, value, placeholder, className, onChange, defaultValue }) => {
 
 
 
@@ -33,7 +34,7 @@ const TextareaField: FC<TextareaFieldProps> = ({ name, value, placeholder, class
   return (
     <div className="form-group m-1">
       <label htmlFor={name}> {capitalizeFirstLetter(name)} :</label>
-      <textarea onChange={onChange} value={value} className={className || ''} name={name} placeholder={placeholder || ''} ></textarea>
+      <textarea onChange={onChange} value={value} defaultValue={defaultValue} className={className || ''} name={name} placeholder={placeholder || ''} ></textarea>
     </div>
 
   );

@@ -5,21 +5,22 @@
   Created At : 11/01/2024 17:42:02
 */
 import React, { FC, useEffect, useState } from 'react';
-import './EditPost.css';
+import './EditModel.css';
 import { useParams } from 'react-router-dom';
 import { Post } from '../../models/Post';
 import { getDatasById } from '../../api/entity';
 import FormPost from '../FormPost/FormPost';
 
 
-interface EditPostProps {
+interface EditModelProps {
  
 }
 
 
-const EditPost : FC<EditPostProps> = () =>{
+const EditModel : FC<EditModelProps> = () =>{
 
   const id = useParams()._id
+console.log(id);
 
   const [post, setPost] = useState<Post>();
   
@@ -31,7 +32,7 @@ const EditPost : FC<EditPostProps> = () =>{
       const runLocalData = async () => {
         if (id) {
           const data = await getDatasById("posts", id)
-          //  console.log(data);
+           console.log(data);
           if (data.isSuccess) {
             const currentPost: Post = data.result
             setPost(currentPost)
@@ -64,4 +65,4 @@ const EditPost : FC<EditPostProps> = () =>{
   );
 }
 
-export default EditPost;
+export default EditModel;

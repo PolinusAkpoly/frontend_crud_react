@@ -12,7 +12,8 @@ import { useFormik } from 'formik';
 import InputField from '../InputField/InputField';
 import TextareaField from '../TextareaField/TextareaField';
 import SelectField from '../SelectField/SelectField';
-import { addDataWithFile, createData } from '../../api/entity';
+import { addDataWithFile, createData, getDatasById, updateDatasById } from '../../api/entity';
+
 // import SelectUser from '../SelectUser/SelectUser';
 
 
@@ -22,28 +23,47 @@ interface FormModalProps {
   entityName?: string
   columns: any[]
   handleClose: () => void
+  modelId?: string
 }
 
 
-const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => {
+const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, modelId }) => {
 
 
   const validate = (values: any) => validateForm(values, columns)
   // const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [fileSource, setFileSource] = useState<File | null>(null)
   const [columnData, setColumnData] = useState<any>(null)
-  // const [entityNameDatas, setEntityNameDatas] = useState<any[]>([])
-  // console.log(entityNameDatas);
+  // const [dataPerId, setDataPerId] = useState<any>(null)
+  
+
+
+
+
+
 
   useEffect(() => {
     window.scrollTo(0, 0)
     const runLocalData = async () => {
-      let datas = await Promise.all(columns.map( (column)=>  filterInput(column)))
+      let newColumn = columns
+      if (modelId && entityName) {
+        let oneData = await getDatasById(entityName, modelId)
+        let data = oneData.result
+        // setDataPerId(data)
+        newColumn = columns.map((column) => {
+          if (data[column.name]) {
+            column.value = data[column.name]
+          }
+          return column
+        })
+
+      }
+      let datas = await Promise.all(newColumn.map((column) => filterInput(column)))
       setColumnData(datas);
-      
+
     }
     runLocalData()
-  },[])
+  }, [modelId])
 
   const getInitValues = () => {
     const result: any = {}
@@ -54,7 +74,7 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
         // Omitir la iteración si se cumple alguna de las condiciones
         return;
       }
-      result[column.name] = 'dzdfz'
+      result[column.name] = ''
     })
     return result
 
@@ -65,10 +85,7 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
     return capitalizeFirstLetter(value)
   }
 
-  
-
   // console.log(getNameUsers(entityNameDatas));
-
 
   const formik = useFormik({
 
@@ -78,14 +95,17 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
       if (entityName) {
         const model = getModel(entityName)
         let result: any = undefined
+        const formData = new FormData()
         if (fileSource) {
-          const formData = new FormData()
-          formData.append("file", fileSource)
-        
-          formData.append(model, JSON.stringify(data))
           
+          formData.append("file", fileSource)
+
+          formData.append(model, JSON.stringify(data))
+
           result = await addDataWithFile(entityName, formData)
-        } else {
+        } else if (fileSource && modelId) {
+          result = await updateDatasById(entityName, formData, modelId)
+        } else{
           result = await createData(entityName, { [model]: data })
         }
         console.log({ result });
@@ -131,11 +151,12 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
           <Modal.Body>
             <form onSubmit={formik.handleSubmit}>
               {
-                columnData?.map((result: any, index: number) => {                  
-
+                columnData?.map((result: any, index: number) => {
+                  
+                 
                   if (result.input == 'input' && result.type != 'file') {
                     return (<div>
-                      <InputField key={index} defaultValue={formik.values[result.name]} onChange={formik.handleChange} type={result.type} name={result.name} className={result.className} placeholder={result.placeholder} />
+                      <InputField key={index}  defaultValue={ modelId ? result.value : formik.values[result.name]}  onChange={formik.handleChange} type={result.type} name={result.name} className={result.className} placeholder={result.placeholder} />
                       {
                         formik.errors[result.name] ?
                           (
@@ -147,21 +168,37 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
                     )
 
                   } else if (result.input == 'input' && result.type == 'file') {
-                    return (<div>
-                      <label htmlFor={result.name}> {capitalizeFirstLetter(result.name)} :</label>
-                      <input
-                        onChange={uploadImage}
-                        className={result.className}
-                        type={result.type}
-                        name={result.name}
-                        placeholder={result.placeholder}
-                      // defaultValue={fileUrl}
-                      />
+                    
+                    return (<div className='d-flex row '>
+                    
+                      <div className={`${modelId ? 'col-9' : ''}`}>
+                          <label htmlFor={result.name}> {capitalizeFirstLetter(result.name)} :</label>
+                          <input
+                            onChange={uploadImage}
+                            className={result.className}
+                            type={result.type}
+                            name={result.name}
+                            placeholder={result.placeholder}
+                            // value={result.value}
+                          // defaultValue={fileUrl}
+                          />
+                      </div>
+
+                      <div className={`${modelId ? 'col-3' : ''}`}>
+                        {                        
+                        modelId ? (                         
+                           <img src={result.value} width={170} height={120} alt={capitalizeFirstLetter(result.name)} className='mt-2' />                         
+                        ) : (
+                          null
+                        )
+
+                      }
+                      </div>
                     </div>)
 
                   } else if (result.input == 'textarea') {
-                    return (<div>
-                      <TextareaField key={index} value={formik.values[result.name]} onChange={formik.handleChange} name={result.name} className={result.className} />
+                    return (<div>         
+                      <TextareaField key={index} defaultValue={modelId ? result.value : formik.values[result.name]} onChange={formik.handleChange} name={result.name} className={result.className} />
                       {
                         formik.touched[result.name] && formik.errors[result.name] ?
                           (
@@ -172,7 +209,7 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
                     </div>)
                   } else if (result.input == 'select') {
                     return (<div>
-                      <SelectField key={index} value={formik.values[result.name]} options={result.options} onChange={formik.handleChange} name={result.name} className={result.className} />
+                      <SelectField key={index} defaultValue={modelId ? result.value : formik.values[result.name]} options={result.options} onChange={formik.handleChange} name={result.name} className={result.className} />
                       {
                         formik.touched[result.name] && formik.errors[result.name] ?
                           (
@@ -182,16 +219,13 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose }) => 
                       }
                     </div>)
                   }
-                 
+
 
                 })}
-
-
-
-              <Modal.Footer>
+              <Modal.Footer>               
                 <Button type='submit' variant="success" >
-                  Save
-                </Button>
+                {modelId ? 'Update' : 'Save'}
+                </Button>                
                 <Button variant="secondary" onClick={handleClose}>
                   Fermer
                 </Button>

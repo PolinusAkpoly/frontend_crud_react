@@ -27,6 +27,12 @@ export const getDatas = async (entityName: string) => {
     const datas = await post(url,data)
     return datas
   }
+  // '/:id'
+  export const updateDatasById = async (entityName: string, data: any, _id: string) =>{
+    const url = webApiUrL + entityName+"/" + _id
+    const datas = await get(url)
+    return datas
+  }
   export const addDataWithFile = async (entityName: string, data: any, setProgress: any = null) =>{
     entityName = entityName.toLowerCase()
     const url = webApiUrL + entityName
