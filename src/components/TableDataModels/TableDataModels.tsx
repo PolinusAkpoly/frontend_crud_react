@@ -143,6 +143,7 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
   const handleClose = ()=>{
     setIsCreateData(false)
     setIsUpdateData(false)
+    setModelId('')
   }
 
   return (

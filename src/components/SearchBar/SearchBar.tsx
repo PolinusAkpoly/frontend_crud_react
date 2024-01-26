@@ -62,9 +62,9 @@ const handleSubmit = (event: any) => {
           {
             columnSelect ?
 
-            columnSelect?.map((column: any) => {
+            columnSelect?.map((column: any, index:number) => {
 
-                return <div className="form-check form-switch">
+                return <div key={index} className="form-check form-switch">
                   <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"                 
                     onChange={(event) => handleSelect(event, column)}
                     checked={column.checked}

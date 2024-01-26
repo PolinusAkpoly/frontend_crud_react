@@ -12,7 +12,7 @@ import { useFormik } from 'formik';
 import InputField from '../InputField/InputField';
 import TextareaField from '../TextareaField/TextareaField';
 import SelectField from '../SelectField/SelectField';
-import { addDataWithFile, createData, getDatasById, updateDatasById } from '../../api/entity';
+import { addDataWithFile, getDatasById, updateDatasById } from '../../api/entity';
 
 // import SelectUser from '../SelectUser/SelectUser';
 
@@ -34,8 +34,7 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
   // const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [fileSource, setFileSource] = useState<File | null>(null)
   const [columnData, setColumnData] = useState<any>(null)
-  // const [dataPerId, setDataPerId] = useState<any>(null)
-  
+
 
 
 
@@ -46,24 +45,26 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
     window.scrollTo(0, 0)
     const runLocalData = async () => {
       let newColumn = columns
+      console.log({ newColumn, modelId });
+
       if (modelId && entityName) {
         let oneData = await getDatasById(entityName, modelId)
         let data = oneData.result
-        // setDataPerId(data)
-        newColumn = columns.map((column) => {
-          if (data[column.name]) {
-            column.value = data[column.name]
-          }
+        newColumn = newColumn.map((column: any) => {
+          column.value = data[column.name]
           return column
         })
-
+        console.log({ newColumn });
       }
+
       let datas = await Promise.all(newColumn.map((column) => filterInput(column)))
+      console.log({datas});
+      
       setColumnData(datas);
 
     }
     runLocalData()
-  }, [modelId])
+  }, [modelId, columns])
 
   const getInitValues = () => {
     const result: any = {}
@@ -74,8 +75,18 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
         // Omitir la iteración si se cumple alguna de las condiciones
         return;
       }
-      result[column.name] = ''
+
+      result[column.name] = ""
+
+      if (modelId) {
+        result[column.name] = column.value
+      }
+
+
     })
+
+    console.log({ initValue: result });
+
     return result
 
   }
@@ -96,19 +107,41 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
         const model = getModel(entityName)
         let result: any = undefined
         const formData = new FormData()
-        if (fileSource) {
+
+        if(modelId){
+          // update
+          if (fileSource) {
+            formData.append("file", fileSource)
+            result = await updateDatasById(entityName, formData, modelId)
+          }else{
+            formData.append(model, JSON.stringify(data))
+            result = await updateDatasById(entityName, formData, modelId)
+          }
+
+        }else{
+          //create 
           
-          formData.append("file", fileSource)
-
           formData.append(model, JSON.stringify(data))
-
+          if (fileSource) {
+            formData.append("file", fileSource)
+          }
           result = await addDataWithFile(entityName, formData)
-        } else if (fileSource && modelId) {
-          result = await updateDatasById(entityName, formData, modelId)
-        } else{
-          result = await createData(entityName, { [model]: data })
+          
         }
         console.log({ result });
+        // if (fileSource) {
+
+        //   formData.append("file", fileSource)
+
+        //   formData.append(model, JSON.stringify(data))
+
+        //   result = await addDataWithFile(entityName, formData)
+        // } else if (fileSource && modelId) {
+        //   result = await updateDatasById(entityName, formData, modelId)
+        // } else {
+        //   result = await createData(entityName, { [model]: data })
+        // }
+        // console.log({ result });
       }
     },
   });
@@ -152,11 +185,11 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
             <form onSubmit={formik.handleSubmit}>
               {
                 columnData?.map((result: any, index: number) => {
-                  
-                 
+
+                  //  result contient columns et valeur associée
                   if (result.input == 'input' && result.type != 'file') {
                     return (<div>
-                      <InputField key={index}  defaultValue={ modelId ? result.value : formik.values[result.name]}  onChange={formik.handleChange} type={result.type} name={result.name} className={result.className} placeholder={result.placeholder} />
+                      <InputField key={index} defaultValue={formik.values[result.name]} onChange={formik.handleChange} type={result.type} name={result.name} className={result.className} placeholder={result.placeholder} />
                       {
                         formik.errors[result.name] ?
                           (
@@ -168,37 +201,38 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
                     )
 
                   } else if (result.input == 'input' && result.type == 'file') {
-                    
+                    // console.log(result);
+
                     return (<div className='d-flex row '>
-                    
+
                       <div className={`${modelId ? 'col-9' : ''}`}>
-                          <label htmlFor={result.name}> {capitalizeFirstLetter(result.name)} :</label>
-                          <input
-                            onChange={uploadImage}
-                            className={result.className}
-                            type={result.type}
-                            name={result.name}
-                            placeholder={result.placeholder}
-                            // value={result.value}
-                          // defaultValue={fileUrl}
-                          />
+                        <label htmlFor={result.name}> {capitalizeFirstLetter(result.name)} :</label>
+                        <input
+                          onChange={uploadImage}
+                          className={result.className}
+                          type={result.type}
+                          name={result.name}
+                          placeholder={result.placeholder}
+                          // defaultValue={result.value}
+                          // value={result.value || ''}
+                        />
                       </div>
 
                       <div className={`${modelId ? 'col-3' : ''}`}>
-                        {                        
-                        modelId ? (                         
-                           <img src={result.value} width={170} height={120} alt={capitalizeFirstLetter(result.name)} className='mt-2' />                         
-                        ) : (
-                          null
-                        )
+                        {
+                          modelId ? (
+                            <img src={result.value} width={170} height={120} alt={capitalizeFirstLetter(result.name)} className='mt-2' />
+                          ) : (
+                            null
+                          )
 
-                      }
+                        }
                       </div>
                     </div>)
 
                   } else if (result.input == 'textarea') {
-                    return (<div>         
-                      <TextareaField key={index} defaultValue={modelId ? result.value : formik.values[result.name]} onChange={formik.handleChange} name={result.name} className={result.className} />
+                    return (<div>
+                      <TextareaField key={index} defaultValue={formik.values[result.name]} onChange={formik.handleChange} name={result.name} className={result.className} />
                       {
                         formik.touched[result.name] && formik.errors[result.name] ?
                           (
@@ -209,7 +243,7 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
                     </div>)
                   } else if (result.input == 'select') {
                     return (<div>
-                      <SelectField key={index} defaultValue={modelId ? result.value : formik.values[result.name]} options={result.options} onChange={formik.handleChange} name={result.name} className={result.className} />
+                      <SelectField key={index} defaultValue={result.value} options={result.options} onChange={formik.handleChange} name={result.name} className={result.className} />
                       {
                         formik.touched[result.name] && formik.errors[result.name] ?
                           (
@@ -219,13 +253,13 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
                       }
                     </div>)
                   }
-
+                  //  pourquoi result.value ??????
 
                 })}
-              <Modal.Footer>               
+              <Modal.Footer>
                 <Button type='submit' variant="success" >
-                {modelId ? 'Update' : 'Save'}
-                </Button>                
+                  {modelId ? 'Update' : 'Save'}
+                </Button>
                 <Button variant="secondary" onClick={handleClose}>
                   Fermer
                 </Button>

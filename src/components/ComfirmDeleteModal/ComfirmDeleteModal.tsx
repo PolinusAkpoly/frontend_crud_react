@@ -17,6 +17,7 @@ interface ComfirmDeleteModalProps {
 
 const ComfirmDeleteModal : FC<ComfirmDeleteModalProps> = ({modelId, entityName}) =>{
   const [data, setData] = useState<any>(null)
+console.log("modelId:"+ modelId+'--------' +entityName);
 
 
     useEffect(() => {
