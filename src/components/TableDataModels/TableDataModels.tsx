@@ -10,7 +10,7 @@ import {  useNavigate } from 'react-router-dom';
 import { capitalizeFirstLetter, filterTableData } from '../../helpers/utils';
 import { getItem, setItem } from '../../services/localstorage.service';
 import Pagination from '../Pagination/Pagination';
-import { getDatasPerPage, searchData } from '../../api/entity';
+import { deleteDatasById, getDatasPerPage, searchData } from '../../api/entity';
 import FormModal from '../FormModal/FormModal';
 import { Link } from 'react-router-dom';
 import SearchBar from '../SearchBar/SearchBar';
@@ -67,6 +67,8 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
               newDatas = await searchData(entityName,params, currentPage, datasPerPage)
             }else{
               newDatas = await getDatasPerPage(entityName, currentPage, datasPerPage)
+              console.log(newDatas);
+              
             }
         }else{
           newDatas = await getDatasPerPage(entityName, currentPage, datasPerPage)
@@ -135,17 +137,34 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
 
   };
 
-  const openEditModel = (id: any) =>{
+  const openEditModal = (id: any) =>{
   setIsUpdateData(!isUpdateData)
   setModelId(id)
  }
-
+  const openConfirmDeleteModal = (id: any) =>{
+    setIsConfirmDeleteData(true)
+    setModelId(id)
+  }
   const handleClose = ()=>{
     setIsCreateData(false)
     setIsUpdateData(false)
     setModelId('')
   }
+ const deleteData = async (entyName: string, modId: string)=>{
+    console.log(entyName , modId);
+    if(entyName && modId){      
+      const result = await deleteDatasById(entyName , modId)
+      console.log(result);
+         if (result.isSuccess) {
+          setIsConfirmDeleteData(false)
+          setModelId('')
+         }
 
+
+      }
+     
+    
+  }
   return (
     <div className="content-wrapper">
       {/* <!-- Content Header (Page header) --> */}
@@ -204,7 +223,7 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
 
                    {
                       isConfirmDeleteData ?
-                        <ComfirmDeleteModal modelId={modelId} entityName={entityName}/>
+                        <ComfirmDeleteModal modelId={modelId} entityName={entityName} deleteData={deleteData}/>
                                            
                         :
                         null
@@ -286,8 +305,8 @@ const TableDataModels: FC<TableDataModelsProps> = ({ entityName, currentPage, se
                               <td>
                                 <div className="d-flex gap-1">
                                   <Link to={"/dashboard/view/" + entityName + "/" + data._id} className="btn btn-success">View</Link>
-                                  <Link onClick={() => openEditModel(data._id)} to={'#'} className="btn btn-primary">Edit</Link>                
-                                  <Link to={'#'} onClick={()=>setIsConfirmDeleteData(true)} className="btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">Delete</Link>
+                                  <Link onClick={() => openEditModal(data._id)} to={'#'} className="btn btn-primary">Edit</Link>                
+                                  <Link to={'#'} onClick={()=>openConfirmDeleteModal(data._id)} className="btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">Delete</Link>
                                   
 
                                 </div>

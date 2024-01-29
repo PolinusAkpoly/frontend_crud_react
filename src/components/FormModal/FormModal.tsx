@@ -12,7 +12,7 @@ import { useFormik } from 'formik';
 import InputField from '../InputField/InputField';
 import TextareaField from '../TextareaField/TextareaField';
 import SelectField from '../SelectField/SelectField';
-import { addDataWithFile, getDatasById, updateDatasById } from '../../api/entity';
+import { addDataWithFile, getDatasById, updateDatasById, updateDatasWithFile } from '../../api/entity';
 
 // import SelectUser from '../SelectUser/SelectUser';
 
@@ -112,10 +112,11 @@ const FormModal: FC<FormModalProps> = ({ entityName, columns, handleClose, model
           // update
           if (fileSource) {
             formData.append("file", fileSource)
-            result = await updateDatasById(entityName, formData, modelId)
+            formData.append("Post", JSON.stringify(data))
+            result = await updateDatasWithFile(entityName,modelId, formData )
           }else{
-            formData.append(model, JSON.stringify(data))
-            result = await updateDatasById(entityName, formData, modelId)
+           
+            result = await updateDatasById(entityName, {Post: data}, modelId)
           }
 
         }else{

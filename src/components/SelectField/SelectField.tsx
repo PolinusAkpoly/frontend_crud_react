@@ -32,7 +32,7 @@ const SelectField: FC<SelectFieldProps> = ({ name, options, defaultValue, classN
 
   return (
     <div className="form-group m-1">
-       <label htmlFor={name}> {capitalizeFirstLetter(name)} {defaultValue} :</label>
+       <label htmlFor={name}> {capitalizeFirstLetter(name)} :</label>
       <select name={name}  onChange={onChange} defaultValue={defaultValue } className={className}>
         {
         options ?

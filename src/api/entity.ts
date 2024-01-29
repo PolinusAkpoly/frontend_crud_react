@@ -1,6 +1,6 @@
 import { webApiUrL } from "../enviromments/enviromment"
 import { User } from "../models/User"
-import { get, post, postWithFile, put } from "./api"
+import { get, post, postWithFile, put, putWithFile, remove } from "./api"
 
 
 
@@ -27,16 +27,29 @@ export const getDatas = async (entityName: string) => {
     const datas = await post(url,data)
     return datas
   }
-  // '/:id'
+  
   export const updateDatasById = async (entityName: string, data: any, _id: string) =>{
     const url = webApiUrL + entityName+"/" + _id
-    const datas = await get(url)
+    const datas = await put(url,data)
+    return datas
+  }
+
+  export const deleteDatasById = async (entityName: string, _id: string) =>{
+    const url = webApiUrL + entityName+"/" + _id
+    const datas = await remove(url)
     return datas
   }
   export const addDataWithFile = async (entityName: string, data: any, setProgress: any = null) =>{
     entityName = entityName.toLowerCase()
     const url = webApiUrL + entityName
     const datas = await postWithFile(url,data,{}, setProgress)
+    return datas
+  }
+  
+  export const updateDatasWithFile = async (entityName: string,id:string, data: any, setProgress: any = null) =>{
+    entityName = entityName.toLowerCase()
+    const url = webApiUrL + entityName +'/'+id
+    const datas = await putWithFile(url,data,{}, setProgress)
     return datas
   }
   
